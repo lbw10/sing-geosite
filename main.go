@@ -304,8 +304,18 @@ func generate(release *github.RepositoryRelease, output string, cnOutput string,
 	if err != nil {
 		return err
 	}
+	specialCodes := []string{"geolocation-!cn@cn", "cn@!cn"}
+	specialData := make(map[string][]geosite.Item)
+	for _, code := range specialCodes {
+	    if items, ok := domainMap[code]; ok {
+	        specialData[code] = items
+	    }
+	}
 	filterTags(domainMap)
 	mergeTags(domainMap)
+	for code, items := range specialData {
+	    domainMap[code] = items
+	}
 	outputPath, _ := filepath.Abs(output)
 	os.Stderr.WriteString("write " + outputPath + "\n")
 	outputFile, err := os.Create(output)
